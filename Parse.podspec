@@ -85,5 +85,5 @@ Pod::Spec.new do |s|
 
   s.libraries        = 'z', 'sqlite3'
 
-  s.dependency 'Bolts/Tasks', :git => 'https://github.com/prion-app/Bolts-ObjC.git', :branch => 'sync_fix'
+  s.dependency 'Bolts/Tasks', '~> 1.6'
 end
