@@ -109,16 +109,7 @@
 }
 
 - (id)waitForResult:(NSError **)error withMainThreadWarning:(BOOL)warningEnabled {
-    if (warningEnabled) {
-        [self waitUntilFinished];
-    } else {
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [self continueWithBlock:^id(BFTask *task) {
-            dispatch_semaphore_signal(semaphore);
-            return nil;
-        }];
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    }
+    [self waitUntilFinishedWarnForMainThread:warningEnabled];
     if (self.cancelled) {
         return nil;
     } else if (self.exception) {
