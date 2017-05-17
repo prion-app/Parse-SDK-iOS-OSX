@@ -245,33 +245,32 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
         PFObject *object = (PFObject *)node;
         NSDictionary *toSearch = nil;
 
-        @synchronized ([object lock]) {
-            // Check for cycles of new objects.  Any such cycle means it will be
-            // impossible to save this collection of objects, so throw an exception.
-            if (object.objectId) {
-                seenNew = [NSSet set];
-            } else {
-                if ([seenNew containsObject:object]) {
-                    [NSException raise:NSInternalInconsistencyException
-                                format:@"Found a circular dependency when saving."];
-                }
-                seenNew = [seenNew setByAddingObject:object];
+        
+        // Check for cycles of new objects.  Any such cycle means it will be
+        // impossible to save this collection of objects, so throw an exception.
+        if (object.objectId) {
+            seenNew = [NSSet set];
+        } else {
+            if ([seenNew containsObject:object]) {
+                [NSException raise:NSInternalInconsistencyException
+                            format:@"Found a circular dependency when saving."];
             }
-
-            // Check for cycles of any object.  If this occurs, then there's no
-            // problem, but we shouldn't recurse any deeper, because it would be
-            // an infinite recursion.
-            if ([seen containsObject:object]) {
-                return;
-            }
-            seen = [seen setByAddingObject:object];
-
-            // Recurse into this object's children looking for dirty children.
-            // We only need to look at the child object's current estimated data,
-            // because that's the only data that might need to be saved now.
-            toSearch = [object->_estimatedData.dictionaryRepresentation copy];
+            seenNew = [seenNew setByAddingObject:object];
         }
-
+        
+        // Check for cycles of any object.  If this occurs, then there's no
+        // problem, but we shouldn't recurse any deeper, because it would be
+        // an infinite recursion.
+        if ([seen containsObject:object]) {
+            return;
+        }
+        seen = [seen setByAddingObject:object];
+        
+        // Recurse into this object's children looking for dirty children.
+        // We only need to look at the child object's current estimated data,
+        // because that's the only data that might need to be saved now.
+        toSearch = [object._estimatedData.dictionaryRepresentation copy];
+        
         [self collectDirtyChildren:toSearch
                           children:dirtyChildren
                              files:dirtyFiles
@@ -351,12 +350,12 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
 // @param saved A set of objects that we can assume will have been saved.
 // @param error The reason why it can't be serialized.
 - (BOOL)canBeSerializedAfterSaving:(NSMutableArray *)saved withCurrentUser:(PFUser *)user error:(NSError **)error {
-    @synchronized (lock) {
+    
         // This method is only used for batching sets of objects for saveAll
         // and when saving children automatically. Since it's only used to
         // determine whether or not save should be called on them, it only
         // needs to examine their current values, so we use estimatedData.
-        if (![[self class] canBeSerializedAsValue:_estimatedData.dictionaryRepresentation
+        if (![[self class] canBeSerializedAsValue:[self._estimatedData.dictionaryRepresentation copy]
                                       afterSaving:saved
                                             error:error]) {
             return NO;
@@ -373,7 +372,7 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
         }
 
         return YES;
-    }
+    
 }
 
 // This saves all of the objects and files reachable from the given object.
