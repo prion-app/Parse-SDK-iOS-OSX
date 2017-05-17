@@ -268,7 +268,6 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
         PFObject *object = (PFObject *)node;
         NSDictionary *toSearch = nil;
 
-        @synchronized ([object lock]) {
             // Check for cycles of new objects.  Any such cycle means it will be
             // impossible to save this collection of objects, so throw an exception.
             if (object.objectId) {
@@ -294,7 +293,6 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
             // We only need to look at the child object's current estimated data,
             // because that's the only data that might need to be saved now.
             toSearch = [object._estimatedData.dictionaryRepresentation copy];
-        }
 
         NSError *localError;
         if (![self collectDirtyChildren:toSearch
@@ -388,19 +386,17 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
 // @param error The reason why it can't be serialized.
 - (BOOL)canBeSerializedAfterSaving:(NSMutableArray *)saved withCurrentUser:(PFUser *)user error:(NSError **)error {
     NSDictionary *dictionaryRepresentationCopy;
-    @synchronized (lock) {
         dictionaryRepresentationCopy = [_estimatedData.dictionaryRepresentation copy];
-    }
-
-    // This method is only used for batching sets of objects for saveAll
-    // and when saving children automatically. Since it's only used to
-    // determine whether or not save should be called on them, it only
-    // needs to examine their current values, so we use estimatedData.
-    if (![[self class] canBeSerializedAsValue:dictionaryRepresentationCopy
-                                  afterSaving:saved
-                                        error:error]) {
-        return NO;
-    }
+    
+        // This method is only used for batching sets of objects for saveAll
+        // and when saving children automatically. Since it's only used to
+        // determine whether or not save should be called on them, it only
+        // needs to examine their current values, so we use estimatedData.
+        if (![[self class] canBeSerializedAsValue:[self._estimatedData.dictionaryRepresentation copy]
+                                      afterSaving:saved
+                                            error:error]) {
+            return NO;
+        }
 
     if ([self isDataAvailableForKey:@"ACL"] &&
         [[self ACLWithoutCopying] hasUnresolvedUser] &&
