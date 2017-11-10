@@ -244,19 +244,6 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
     } else if ([node isKindOfClass:[PFObject class]]) {
         PFObject *object = (PFObject *)node;
         NSDictionary *toSearch = nil;
-
-        @synchronized ([object lock]) {
-            // Check for cycles of new objects.  Any such cycle means it will be
-            // impossible to save this collection of objects, so throw an exception.
-            if (object.objectId) {
-                seenNew = [NSSet set];
-            } else {
-                if ([seenNew containsObject:object]) {
-                    PFConsistencyAssertionFailure(@"Found a circular dependency when saving.");
-                }
-                seenNew = [seenNew setByAddingObject:object];
-            }
-
         
         // Check for cycles of new objects.  Any such cycle means it will be
         // impossible to save this collection of objects, so throw an exception.
@@ -264,8 +251,7 @@ static void PFObjectAssertValueIsKindOfValidClass(id object) {
             seenNew = [NSSet set];
         } else {
             if ([seenNew containsObject:object]) {
-                [NSException raise:NSInternalInconsistencyException
-                            format:@"Found a circular dependency when saving."];
+                PFConsistencyAssertionFailure(@"Found a circular dependency when saving.");
             }
             seenNew = [seenNew setByAddingObject:object];
 
