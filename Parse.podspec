@@ -1,12 +1,12 @@
 Pod::Spec.new do |s|
   s.name             = 'Parse'
-  s.version          = '1.13.0'
+  s.version          = '1.15.3'
   s.license          =  { :type => 'BSD', :file => 'LICENSE' }
-  s.homepage         = 'https://www.parse.com/'
+  s.homepage         = 'http://parseplatform.org/'
   s.summary          = 'A library that gives you access to the powerful Parse cloud platform from your iOS/OS X/watchOS/tvOS app.'
   s.authors          = 'Parse'
 
-  s.source           = { :git => "https://github.com/ParsePlatform/Parse-SDK-iOS-OSX.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/parse-community/Parse-SDK-iOS-OSX.git", :tag => s.version.to_s }
 
   s.platform = :ios, :osx, :tvos, :watchos
   s.ios.deployment_target = '7.0'
@@ -85,5 +85,5 @@ Pod::Spec.new do |s|
 
   s.libraries        = 'z', 'sqlite3'
 
-  s.dependency 'Bolts/Tasks', '~> 1.6'
+  s.dependency 'Bolts/Tasks', '~> 1.8'
 end

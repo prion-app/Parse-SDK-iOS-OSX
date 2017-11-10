@@ -9,15 +9,24 @@
 
 import Foundation
 
+import Parse
+
 @objc
 public class SwiftSubclass: PFObject, PFSubclassing {
+
     @NSManaged public var primitiveProperty: Int
     @NSManaged public var objectProperty: AnyObject?
 
-    @NSManaged public var relationProperty: PFRelation?
+    public var relationProperty: PFRelation<PFObject> {
+        return relation(forKey: "relationProperty")
+    }
     @NSManaged public var badProperty: CGPoint
 
     public static func parseClassName() -> String {
         return "SwiftSubclass"
+    }
+
+    func test_validateSwiftImport() {
+        let _ = SwiftSubclass(withoutDataWithObjectId: "")
     }
 }

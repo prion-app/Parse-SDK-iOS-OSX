@@ -7,5 +7,10 @@
  * of patent rights can be found in the PATENTS file in the same directory.
  */
 
-#import <Parse/Parse.h>
-#import <Parse/PFObject+Subclass.h>
+#import "ParseManager.h"
+
+@interface ParseManager ()
+
+- (void)setCommandRunner:(id<PFCommandRunning>)commandRunner;
+
+@end

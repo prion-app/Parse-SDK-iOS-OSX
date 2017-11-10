@@ -27,6 +27,7 @@
 #import "PFUser.h"
 #import "PFURLSessionCommandRunner.h"
 #import "PFPersistenceController.h"
+#import "ParseManagerPrivate.h"
 #import "PFApplication.h"
 
 #if !TARGET_OS_WATCH && !TARGET_OS_TV
@@ -174,12 +175,15 @@ static NSString *const _ParseApplicationIdFileName = @"applicationId";
                                 [PFPinningEventuallyQueue newDefaultPinningEventuallyQueueWithDataSource:self]
                                 :
                                 commandCache);
-
             // We still need to clear out the old command cache even if we're using Pinning in case
             // anything is left over when the user upgraded. Checking number of pending and then
             // clearing should be enough.
-            if (self.offlineStoreLoaded && commandCache.commandCount > 0) {
-                [commandCache removeAllCommands];
+            if (self.offlineStoreLoaded) {
+                if (commandCache.commandCount > 0) {
+                    [commandCache removeAllCommands];
+                }
+                // we won't need it after, terminate...
+                [commandCache terminate];
             }
         }
 #endif
@@ -305,6 +309,11 @@ static NSString *const _ParseApplicationIdFileName = @"applicationId";
 
 #pragma mark CommandRunner
 
+// Set Command Runner. Used for testing.
+- (void)setCommandRunner:(id<PFCommandRunning>)commandRunner {
+    _commandRunner = commandRunner;
+}
+
 - (id<PFCommandRunning>)commandRunner {
     __block id<PFCommandRunning> runner = nil;
     dispatch_sync(_commandRunnerAccessQueue, ^{
@@ -428,12 +437,15 @@ static NSString *const _ParseApplicationIdFileName = @"applicationId";
     @weakify(self);
     return [BFTask taskFromExecutor:[BFExecutor executorWithDispatchQueue:_preloadQueue] withBlock:^id{
         @strongify(self);
-        [PFUser currentUser];
-        [PFConfig currentConfig];
+
+        NSArray *tasks = @[
+                           [PFUser getCurrentUserInBackground],
+                           [PFConfig getCurrentConfigInBackground],
 #if !TARGET_OS_WATCH && !TARGET_OS_TV
-        [PFInstallation currentInstallation];
+                           [PFInstallation getCurrentInstallationInBackground],
 #endif
-        
+                           ];
+        [[BFTask taskForCompletionOfAllTasks:tasks] waitUntilFinished]; // Wait synchronously to make sure we are blocking preload queue.
         [self eventuallyQueue];
 
         return nil;
