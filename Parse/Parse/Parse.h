@@ -22,9 +22,9 @@
 #import <Parse/PFConstants.h>
 #import <Parse/PFDecoder.h>
 #import <Parse/PFEncoder.h>
-#import <Parse/PFFile.h>
-#import <Parse/PFFile+Deprecated.h>
-#import <Parse/PFFile+Synchronous.h>
+#import <Parse/PFFileObject.h>
+#import <Parse/PFFileObject+Deprecated.h>
+#import <Parse/PFFileObject+Synchronous.h>
 #import <Parse/PFGeoPoint.h>
 #import <Parse/PFPolygon.h>
 #import <Parse/PFObject.h>
@@ -64,6 +64,8 @@
 
 #elif TARGET_OS_TV
 
+#import <Parse/PFInstallation.h>
+#import <Parse/PFPush.h>
 #import <Parse/PFProduct.h>
 #import <Parse/PFPurchase.h>
 

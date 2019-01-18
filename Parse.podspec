@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'Parse'
-  s.version          = '1.17.1'
+  s.version          = '1.17.2'
   s.license          =  { :type => 'BSD', :file => 'LICENSE' }
   s.homepage         = 'http://parseplatform.org/'
   s.summary          = 'A library that gives you access to the powerful Parse cloud platform from your iOS/OS X/watchOS/tvOS app.'
@@ -34,17 +34,7 @@ Pod::Spec.new do |s|
                           'Parse/Parse/Internal/Purchase/**/*.{h,m}',
                           'Parse/Parse/Internal/PFMemoryEventuallyQueue.{h,m}'
     s.tvos.exclude_files = 'Parse/Parse/PFNetworkActivityIndicatorManager.{h,m}',
-                           'Parse/Parse/PFPush.{h,m}',
-                           'Parse/Parse/PFPush+Synchronous.{h,m}',
-                           'Parse/Parse/PFPush+Deprecated.{h,m}',
-                           'Parse/Parse/PFInstallation.{h,m}',
-                           'Parse/Parse/Internal/PFAlertView.{h,m}',
-                           'Parse/Parse/Internal/Push/**/*.{h,m}',
-                           'Parse/Parse/Internal/Installation/Controller/*.{h,m}',
-                           'Parse/Parse/Internal/Installation/Constants/*.{h,m}',
-                           'Parse/Parse/Internal/Installation/CurrentInstallationController/*.{h,m}',
-                           'Parse/Parse/Internal/Installation/PFInstallationPrivate.h',
-                           'Parse/Parse/Internal/Commands/PFRESTPushCommand.{h,m}'
+                           'Parse/Parse/Internal/PFAlertView.{h,m}'
     s.watchos.exclude_files = 'Parse/Parse/PFNetworkActivityIndicatorManager.{h,m}',
                               'Parse/Parse/PFProduct.{h,m}',
                               'Parse/Parse/PFPurchase.{h,m}',
@@ -136,8 +126,8 @@ Pod::Spec.new do |s|
 
     s.dependency 'Parse/Core'
     s.dependency 'Bolts', '~> 1.9'
-    s.dependency 'FBSDKTVOSKit', '~> 4.29'
-    s.dependency 'FBSDKShareKit', '4.28'
+    s.dependency 'FBSDKTVOSKit', '~> 4.33'
+    s.dependency 'FBSDKShareKit', '~> 4.33'
   end
 
   s.subspec 'TwitterUtils' do |s|
